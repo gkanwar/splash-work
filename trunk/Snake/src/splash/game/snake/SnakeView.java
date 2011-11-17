@@ -23,7 +23,7 @@ public class SnakeView extends View
 	private int score = 0;
 	
 	public static final int GRID_SIZE = 20;
-	public static final int TIME_STEP = 10;
+	public static final int TIME_STEP = 5;
 	
 	private int curFrame = 0;
 	
@@ -53,9 +53,9 @@ public class SnakeView extends View
 	{
 		//Draw snake
 		LinkedList<Point> tempPoints = mSnake.getPoints();
-		mPaint.setColor(Color.WHITE);
+		mPaint.setColor(Color.BLACK);
 		canvas.drawRect(0, 0, width, height, mPaint);
-	    mPaint.setColor(Color.RED);
+	    mPaint.setColor(Color.GREEN);
 	    for (int i = 0; i < tempPoints.size(); i++)
 	    {
 	    	canvas.drawCircle(tempPoints.get(i).x*GRID_SIZE + GRID_SIZE/2, tempPoints.get(i).y*GRID_SIZE + GRID_SIZE/2, GRID_SIZE/2, mPaint);
