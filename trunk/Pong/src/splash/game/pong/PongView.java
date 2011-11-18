@@ -28,42 +28,47 @@ public class PongView extends View
 	int PlayerOneScore = 0;
 	int PlayerTwoScore = 0;
 	
+	private Paint mPaint = new Paint();
 	
-    public PongView(Context context, AttributeSet attrs ) {
+	
+    public PongView(Context context, AttributeSet attrs)
+    {
 		super(context,attrs);
-		// TODO Auto-generated constructor stub
-		
 	}
-    public void setScreenSize( Point ss )
+    
+	protected void onDraw (Canvas canvas)
     {
-    	screenSize = ss;
-    	ss.y -= 50;
-    	ballXStart = screenSize.x/2;
-    	ballYStart = screenSize.y/2;
-    }
-	protected void onDraw ( Canvas canvas )
-    {
-    	Paint paint = new Paint();
-    	paint.setColor(Color.GREEN);
     	updatePositions();
-    	if ( checkScore() )
+    	if (checkScore())
     	{
     		resetBall();
     	}
-    	setScreenSize( new Point( canvas.getWidth(), canvas.getHeight() ) );
-    	//draw the paddles and ball
-    	canvas.drawRect(new Rect(0,paddleYDim + firstPaddleLoc,paddleXDim,firstPaddleLoc), paint);
-    	canvas.drawRect( new Rect(screenSize.x - paddleXDim, secondPaddleLoc, screenSize.x,secondPaddleLoc + paddleYDim),paint);
-    	canvas.drawCircle(ballXLoc, ballYLoc, ballRad, paint);
-    	canvas.drawText(""+PlayerOneScore, screenSize.x/4, screenSize.y/4, paint);
-    	canvas.drawText(""+PlayerTwoScore, 3*screenSize.x/4,screenSize.y/4,paint);
+    	
+    	//Draw the paddles and ball
+    	mPaint.setColor(Color.GREEN);
+    	canvas.drawRect(new Rect(0, paddleYDim + firstPaddleLoc, paddleXDim, firstPaddleLoc), mPaint);
+    	canvas.drawRect(new Rect(screenSize.x - paddleXDim, secondPaddleLoc, screenSize.x, secondPaddleLoc + paddleYDim),mPaint);
+    	canvas.drawCircle(ballXLoc, ballYLoc, ballRad, mPaint);
+    	canvas.drawText(""+PlayerOneScore, screenSize.x/4, screenSize.y/4, mPaint);
+    	canvas.drawText(""+PlayerTwoScore, 3*screenSize.x/4, screenSize.y/4, mPaint);
+    	
     	invalidate();
     }
+	
+	@Override
+	public void onSizeChanged(int width, int height, int oldw, int oldh)
+	{
+		screenSize.x = width;
+		screenSize.y = height;
+	}
+	
+	@Override
     public boolean onTouchEvent(final MotionEvent event) 
     {
     	firstPaddleLoc = (int) event.getY();
     	return true;
     }
+	
     private void resetBall()
     {
     	ballXLoc = ballXStart;
@@ -71,66 +76,67 @@ public class PongView extends View
     	ballXVel = ballStartVelX;
     	ballYVel = ballStartVelY;
     }
+    
     private void updatePositions()
     {
-
-
-	    secondPaddleLoc += ballYLoc > secondPaddleLoc + paddleYDim/2 ? Math.min( Math.abs(ballYLoc - secondPaddleLoc - paddleYDim/2), paddleVelMax ) 
-	    						: -Math.min( Math.abs(ballYLoc - secondPaddleLoc - paddleYDim/2), paddleVelMax );
-
-    	if ( (checkCollision(0) || checkCollision(1)) && lastCollision == 0)
+    	//Pseudo-AI -> computer always moves towards the ball
+	    secondPaddleLoc += (ballYLoc > secondPaddleLoc + paddleYDim/2 ? Math.min( Math.abs(ballYLoc - secondPaddleLoc - paddleYDim/2), paddleVelMax ) 
+	    						: -Math.min( Math.abs(ballYLoc - secondPaddleLoc - paddleYDim/2), paddleVelMax ));
+    	
+    	
+    	ballXLoc += ballXVel;
+    	ballYLoc += ballYVel;
+    	
+    	if ((checkCollision(0) || checkCollision(1)) && lastCollision == 0)
     	{
-    		ballXVel *= -1;
-    		ballXVel*=1.1;
-        	ballXVel*=1.1;
+    		ballXVel *= -(1.2);
         	
     		lastCollision = 20;
     	}
-    	ballXLoc += ballXVel;
-    	ballYLoc += ballYVel;
-    	if ( lastCollision > 0 )
+    	if (lastCollision > 0 )
     	{
     		lastCollision--;
     	}
-    	if ( ballYLoc > screenSize.y  || ballYLoc < 0 )
+    	
+    	if (ballYLoc > screenSize.y  || ballYLoc < 0 )
     	{
     		ballYVel*=-1;
     	}
     }
-    private boolean checkCollision( int paddle) //paddle should be 0 or 1
+    
+    private boolean checkCollision(int paddle) //Paddle should be 0 or 1
     {
-    	if ( ballYLoc >= firstPaddleLoc && ballYLoc <= firstPaddleLoc + paddleYDim )
+    	if(paddle == 0) //Computer (higher x) paddle
     	{
-    		if ( (paddle != 0 && ballXLoc - ballRad <= paddleXDim) )
+    		if(ballYLoc >= secondPaddleLoc && ballYLoc <= secondPaddleLoc + paddleYDim && ballXLoc + ballRad >= screenSize.x - paddleXDim)
     		{
     			return true;
     		}
     	}
-    	if ( ballYLoc >= secondPaddleLoc && ballYLoc <= secondPaddleLoc + paddleYDim )
+    	else
     	{
-    		if ( ballXLoc + ballRad >= screenSize.x -paddleXDim )
+    		if(ballYLoc >= firstPaddleLoc && ballYLoc <= firstPaddleLoc + paddleYDim && ballXLoc - ballRad <= paddleXDim)
     		{
     			return true;
     		}
     	}
-    	return false;
-    }
-    private boolean checkScore ()
-    {
-    	if(screenSize.x > 50 )
-	    {
-	    	if ( ballXLoc > screenSize.x )
-	    	{
-	    		PlayerOneScore++;
-	    		return true;
-	    	}
-	    	else if ( ballXLoc < 0 )
-	    	{
-	    		PlayerTwoScore++;
-	    		return true;
-	    	}
-	    }
-    	return false;
-    }
 
+    	return false;
+    }
+    
+    private boolean checkScore()
+    {
+    	if (ballXLoc > screenSize.x)
+    	{
+    		PlayerOneScore++;
+    		return true;
+    	}
+    	else if (ballXLoc < 0)
+    	{
+    		PlayerTwoScore++;
+    		return true;
+    	}
+    	
+    	return false;
+    }
 }
