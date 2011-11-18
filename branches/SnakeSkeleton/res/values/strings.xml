@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="title">Snake</string>
+    <string name="app_name">Snake</string>
+<string name="splash">Splash! 2011</string>
+<string name="touch_to_continue">Touch to continue</string>
+</resources>
