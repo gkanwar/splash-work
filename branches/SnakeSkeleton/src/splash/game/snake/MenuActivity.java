@@ -16,11 +16,5 @@ public class MenuActivity extends Activity
         setContentView(R.layout.menu);
     }
     
-    @Override
-    public boolean onTouchEvent(MotionEvent event)
-    {
-    	startActivity(new Intent(getBaseContext(), GameActivity.class));
-    	finish();
-    	return true;
-    }
+    //TODO: Override onTouchEvent to start the main game activity when triggered
 }
