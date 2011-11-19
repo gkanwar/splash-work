@@ -89,7 +89,7 @@ public class SnakeView extends View
 	@Override
 	public boolean onTouchEvent(MotionEvent event)
 	{
-		if(event.getAction() == MotionEvent.ACTION_DOWN)
+		if(event.getAction() == MotionEvent.ACTION_DOWN || event.getAction() == MotionEvent.ACTION_MOVE)
 		{
 			if (Math.abs(event.getX() - width/2) > Math.abs(event.getY() - height/2))
 			{
