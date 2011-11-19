@@ -4,8 +4,5 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     >
-     <splash.game.pong.PongView 
-    	android:id = "@+id/pongView"
-   	 android:layout_width="fill_parent"
-   	  android:layout_height="fill_parent" /> 
+    <!-- TODO: Add in the PongView -->
 </LinearLayout>
