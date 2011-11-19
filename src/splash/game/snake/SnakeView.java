@@ -17,18 +17,27 @@ import android.view.View;
 
 public class SnakeView extends View
 {
+	//Start off with a snake of length 5 at (1, 1) facing right
 	private Snake mSnake = new Snake(1, 1, 5, Snake.RIGHT);
+	//Variables to keep track of how large our screen and board are
 	private int width, height, boardWidth, boardHeight;
+	//Current location of the food
 	private int foodX, foodY;
+	//Current score
 	private int score = 0;
 	
+	//Constant that determines grid size in pixels
 	public static final int GRID_SIZE = 20;
+	//Constant that determines the time step (for updating) in number of frames
 	public static final int TIME_STEP = 5;
 	
+	//Our current frame in the timestep
 	private int curFrame = 0;
 	
+	//A random number generator
 	private Random mRand = new Random();
 	
+	//Our paint
 	private Paint mPaint = new Paint();
 	
 	public SnakeView(Context context, AttributeSet attrs)
@@ -36,52 +45,24 @@ public class SnakeView extends View
 		super(context, attrs);
 	}
 	
-	protected void onSizeChanged (int w, int h, int oldw, int oldh)
-	{
-		//Set boardWidth and boardHeight
-		boardWidth = w/GRID_SIZE;
-		boardHeight = h/GRID_SIZE;
-		//Get width and height rounded down to the nearest 4
-		width = boardWidth*GRID_SIZE;
-		height = boardHeight*GRID_SIZE;
-		
-		generateFood();
-	}
+	//TODO: Override onSizeChanged to set width and height to be
+	//the screen width and height rounded down to the nearest GRID_SIZE.
+	//Also set boardWidth and boardHeight to be those values divided by
+	//GRID_SIZE. We're also going to generate our initial food here
+	//instead of the constructor, because we need the boardWidth and height.
 
 	@Override
 	public void onDraw(Canvas canvas)
 	{
-		//Draw snake
-		LinkedList<Point> tempPoints = mSnake.getPoints();
-		mPaint.setColor(Color.BLACK);
-		canvas.drawRect(0, 0, width, height, mPaint);
-	    mPaint.setColor(Color.GREEN);
-	    for (int i = 0; i < tempPoints.size(); i++)
-	    {
-	    	canvas.drawCircle(tempPoints.get(i).x*GRID_SIZE + GRID_SIZE/2, tempPoints.get(i).y*GRID_SIZE + GRID_SIZE/2, GRID_SIZE/2, mPaint);
-	    }
+		//TODO: Draw the snake (loop through the points the snake has and draw circles)
+		
+		//TODO: Draw the food (you can just draw a rectangle in the right location)
+		
+		//TODO: In the case where curFrame is the last one of the time step update locations:
+		//Call the moveAndCheck function on the snake (go to game over if this fails)
+		//Check for a food collision (see function below), and resolve appropriately
 	    
-	    //Draw the food
-	    mPaint.setColor(Color.GREEN);
-	    canvas.drawRect(foodX*GRID_SIZE, foodY*GRID_SIZE, (foodX+1)*(GRID_SIZE), (foodY+1)*(GRID_SIZE), mPaint);
-	    Log.v("SplashSnake", "Food loc, x: " + foodX + ", y: " + foodY);
-	    
-	    if(curFrame == TIME_STEP)
-	    {
-	    	if(!mSnake.moveAndCheck(boardWidth, boardHeight))
-	    	{
-	    		((Activity) getContext()).startActivity(new Intent(getContext(), GameOverActivity.class));
-	    		((Activity) getContext()).finish();
-	    	}
-	    	if(foodCollision())
-	    	{
-	    		score++;
-	    		mSnake.add();
-	    		
-	    		generateFood();
-	    	}
-	    	curFrame = 0;
-	    }
+		//Increment the current frame and invalidate so that it redraws
 	    curFrame++;
 	    invalidate();
 	}
@@ -91,28 +72,7 @@ public class SnakeView extends View
 	{
 		if(event.getAction() == MotionEvent.ACTION_DOWN || event.getAction() == MotionEvent.ACTION_MOVE)
 		{
-			if (Math.abs(event.getX() - width/2) > Math.abs(event.getY() - height/2))
-			{
-				if (event.getX() - width/2 > 0)
-				{
-					mSnake.setDir(Snake.RIGHT);
-				}
-				else
-				{
-					mSnake.setDir(Snake.LEFT);
-				}
-			}
-			else
-			{
-				if (event.getY() - height/2 > 0)
-				{
-					mSnake.setDir(Snake.DOWN);
-				}
-				else
-				{
-					mSnake.setDir(Snake.UP);
-				}
-			}
+			//TODO: Check which region of the screen the touch happened in and set the direction accordingly
 		}
 		
 		return true;
@@ -120,25 +80,13 @@ public class SnakeView extends View
 	
 	private void generateFood()
 	{
-		foodX = mRand.nextInt(boardWidth);
-		foodY = mRand.nextInt(boardHeight);
-		while(foodCollision())
-		{
-			foodX = mRand.nextInt(boardWidth);
-			foodY = mRand.nextInt(boardHeight);
-		}
+		//TODO: Try to generate the food until there's no food collision (see function below)
 	}
 	
 	private boolean foodCollision()
 	{
-		Point frontPoint = mSnake.getPoints().getLast();
-		if (foodX == frontPoint.x && foodY == frontPoint.y)
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
+		//TODO: Return true if the food collides with the head of the snake
+		
+		return true;
 	}
 }

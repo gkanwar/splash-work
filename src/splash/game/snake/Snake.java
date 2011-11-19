@@ -6,9 +6,12 @@ import android.graphics.Point;
 
 public class Snake
 {
+	//LinkedList of Points that make up the snake
 	private LinkedList<Point> mPointsQueue;
+	//The current direction the snake is travelling in (see constants below)
 	private int curDir;
 	
+	//Direction constants
 	public static final int UP = 0;
 	public static final int LEFT = 1;
 	public static final int DOWN = 2;
@@ -17,89 +20,47 @@ public class Snake
 	public Snake(int startX, int startY, int startLen, int dir)
 	{
 		mPointsQueue = new LinkedList<Point>();
-		Point tempPoint;
-		int dx = getDirDx(dir), dy = getDirDy(dir);
-		for (int i = 0; i < startLen; i++)
-		{
-			tempPoint = new Point(startX + i*dx, startY + i*dy);
-			mPointsQueue.addLast(tempPoint);
-		}
 		
-		curDir = dir;
+		//TODO: Initialize mPointsQueue with the initial snake
 	}
 
 	public boolean moveAndCheck(int boardWidth, int boardHeight)
 	{
-		int dx = getDirDx(curDir), dy = getDirDy(curDir);
-		
-		Point frontPoint = mPointsQueue.getLast();
-		
-		if (frontPoint.x + dx >= boardWidth || frontPoint.x + dx < 0 || frontPoint.y + dy >= boardHeight || frontPoint.y + dy < 0)
-		{
-			return false;
-		}
-		
-		for (int i = 0; i < mPointsQueue.size() - 1; i++)
-		{
-			//We have a collision
-			if(frontPoint.x + dx == mPointsQueue.get(i).x && frontPoint.y + dy == mPointsQueue.get(i).y)
-			{
-				return false;
-			}
-		}
-		
-		//No collisions, move
-		Point backPoint = mPointsQueue.remove();
-		backPoint.x = frontPoint.x + dx;
-		backPoint.y = frontPoint.y + dy;
-		mPointsQueue.addLast(backPoint);
+		//TODO: Move snake in curDir and check for collisions
+		//Return true if no collisions exist, false otherwise
 		
 		return true;
 	}
 	
 	public void add()
 	{
-		Point newPoint = new Point(mPointsQueue.getLast().x, mPointsQueue.getLast().y);
-		mPointsQueue.addFirst(newPoint);
+		//TODO: Extend the snake length by one
+		//Hint: you can add a duplicate point at the tail of the snake, i.e. if your snake was
+		//HEAD-(0,0) (1,0) (2,0)-TAIL, you could make it HEAD-(0,0) (1,0) (2,0) (2,0)-TAIL
 	}
 	
 	public int getDirDx(int dir)
 	{
-		if (dir == UP || dir == DOWN)
-		{
-			return 0;
-		}
-		else if (dir == RIGHT)
-		{
-			return 1;
-		}
-		else
-		{
-			return -1;
-		}
+		//TODO: It may be helpful to write these functions
+		//It should return -1, 0, or 1 depending on what the change in x direction should be for the given direction
+
+		return 0;
 	}
 	
 	public int getDirDy(int dir)
 	{
-		if (dir == LEFT || dir == RIGHT)
-		{
-			return 0;
-		}
-		else if (dir == DOWN)
-		{
-			return 1;
-		}
-		else
-		{
-			return -1;
-		}
+		//TODO: It may be helpful to implement
+		
+		return 0;
 	}
 	
+	//Setter
 	public void setDir(int dir)
 	{
 		curDir = dir;
 	}
 	
+	//Getter
 	public LinkedList<Point> getPoints()
 	{
 		return mPointsQueue;
