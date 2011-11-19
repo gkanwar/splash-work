@@ -16,19 +16,30 @@ import android.view.View;
 
 public class HeliView extends View
 {
+	//Random number generator
 	private Random mRand = new Random();
+	//The speed of the helicopter
 	private int speed = 4;
+	//Some helicopter dimensions
 	private final int heliWidth  = 60;
 	private final int heliHeight = 20;
+	//Starting state constants
 	private int heliStartX,heliStartY;
+	//Score variable
 	private int score = 0;
+	//Helicopter location (this is actually fixed)
 	private int heliX = 10,heliY;
+	//Velocity of the helicopter
 	private float heliVel = 0;
+	//The screenSize variable (defines width and height)
 	private Point screenSize = new Point();
-	private LinkedList<Wall> walls = new LinkedList<Wall>(); //x current, y current, length
+	//List of walls and blocks
+	private LinkedList<Wall> walls = new LinkedList<Wall>();
 	private LinkedList<Block> blocks = new LinkedList<Block>();
+	//Variable to keep track of if we're accelerating upwards
 	private boolean accel = false;
 	
+	//Our paint
 	private Paint mPaint = new Paint();
 	
 	public HeliView(Context context, AttributeSet attrs)
@@ -36,16 +47,9 @@ public class HeliView extends View
 		super(context,attrs);
 	}
 	
-	@Override
-	public void onSizeChanged(int width, int height, int oldw, int oldh)
-	{
-		screenSize.x = width;
-		screenSize.y = height;
-		
-		heliStartX = 10;
-		heliStartY = screenSize.y/2 - heliHeight/2;
-		resetGame();
-	}
+	//TODO: Implement onSizeChanged such that it sets screenSize and sets the helicopter location
+	//(we can't set this before, because we need to know the dimensions to not place it off the screen)
+	//Also call resetGame() here... this is basically our setup function
 	
 	@Override
 	protected void onDraw (Canvas canvas)
@@ -56,17 +60,15 @@ public class HeliView extends View
 		for (int i = 0; i < blocks.size(); i++)
 		{
 			tempBlock = blocks.get(i);
-			canvas.drawRect(tempBlock.getX(), tempBlock.getY(), tempBlock.getX() + Block.BLOCK_WIDTH, tempBlock.getY() + Block.BLOCK_HEIGHT, mPaint);
+			//TODO: Draw the block
 		}
 		for (int j = 0; j < walls.size(); j++)
 		{
 			tempWall = walls.get(j);
-			canvas.drawRect(tempWall.getX(), 0, tempWall.getX() + Wall.WALL_WIDTH, tempWall.getHeight(), mPaint);
-			canvas.drawRect(tempWall.getX(), screenSize.y - tempWall.getHeight(), tempWall.getX() + Wall.WALL_WIDTH, screenSize.y,  mPaint);
+			//TODO: Draw the wall, both top and bottom
 		}
 		
-		mPaint.setColor(Color.BLUE);
-		canvas.drawRect(heliX, heliY, heliX + heliWidth, heliY + heliHeight, mPaint);
+		//TODO: Draw the helicopter
 		
 		updatePhysics();
 		invalidate();
@@ -79,71 +81,33 @@ public class HeliView extends View
 		for (int i = 0; i < wallsLen; i++)
 		{
 			tempWall = walls.get(i);
-			tempWall.step(speed);
+			//TODO: Step the wall
 			
-			if (i == wallsLen - 1 && tempWall.getX() + Wall.WALL_WIDTH < screenSize.x)
-			{
-				int height;
-				if(tempWall.getHeight() > screenSize.y/3)
-				{
-					height = tempWall.getHeight() - screenSize.y/10;
-				}
-				else if(tempWall.getHeight() < 0)
-				{
-					height = tempWall.getHeight() + screenSize.y/10;
-				}
-				else
-				{
-					height = tempWall.getHeight() + mRand.nextInt(screenSize.y / 10) - screenSize.y/20;
-				}
-				int prevLoc = tempWall.getX();
-				
-				walls.addLast(new Wall(prevLoc + Wall.WALL_WIDTH, height));
-			}
+			//TODO: Check to see if the last wall is one WALL_WIDTH away, and if so create the next wall
 		}
 		
-		if (walls.size() > 0 && walls.get(0).getX() + Wall.WALL_WIDTH <= 0)
-		{
-			walls.removeFirst();
-		}
+		//TODO: Check to see if the first wall is off the screen, if so remove it from the linked list
 		
 		Block tempBlock;
 		for (int i = 0; i < blocks.size(); i++)
 		{
 			tempBlock = blocks.get(i);
-			tempBlock.step(speed);
+			//TODO: Step the block
 		}
 		
-		if(blocks.size() > 0 && blocks.get(0).getX() + Block.BLOCK_WIDTH <= 0)
-		{
-			blocks.removeFirst();
-		}
+		//TODO: Check to see if the first block is off the screen, if so remove it from the linked list
 		
 		// 1/100 chance of adding a block
 		if (mRand.nextInt(100) == 0)
 		{
-			blocks.addLast(new Block(screenSize.x, mRand.nextInt((7/6) * screenSize.y) - screenSize.y / 6));
+			//TODO: Add a block
 		}
 		
-		if (accel)
-		{
-			heliVel -= 0.5;
-		}
-		else
-		{
-			heliVel += 0.5;
-		}
+		//TODO: Increment/decrement the velocity depending on whether accel is true
 
-		if (checkCollision())
-		{
-			resetGame();
-		}
-		else
-		{
-			score++;
-		}
+		//TODO: Use checkCollision() to determine whether the game has ended, if not increment score
 		
-		heliY += heliVel;
+		//TODO: Update the helicopter's y position
 	}
 	
 	private void resetGame()
@@ -169,44 +133,21 @@ public class HeliView extends View
 		for (int i = 0; i < blocks.size()/2;i++)
 		{
 			tempBlock = blocks.get(i);
-			Rect blockRect = new Rect(tempBlock.getX(), tempBlock.getY(), tempBlock.getX() + Block.BLOCK_WIDTH, tempBlock.getY() + Block.BLOCK_HEIGHT);
-			if (Rect.intersects(heliRect, blockRect))
-			{
-				return true;
-			}
+			//TODO: Create a Rect object for the block, then use Rect.intersects to determine collisions
 		}
 		
 		Wall tempWall;
 		for (int j = 0; j < walls.size(); j++)
 		{
 			tempWall = walls.get(j);
-			Rect wallRectOne = new Rect(tempWall.getX(), 0, tempWall.getX() + Wall.WALL_WIDTH, tempWall.getHeight());
-			Rect wallRectTwo = new Rect(tempWall.getX(), screenSize.y - tempWall.getHeight(), tempWall.getX() + Wall.WALL_WIDTH, screenSize.y);
-			if (Rect.intersects(heliRect, wallRectOne) || Rect.intersects(heliRect, wallRectTwo))
-			{
-				return true;
-			}
+			//TODO: Create two Rect objects for the pair of walls corresponding to this Wall object, then use Rect.intersects
 		}
-		
-		if (heliY > screenSize.y)
-		{
-			return true;
-		}
+
+		//TODO: Check for the helicopter leaving the screen
 		
 		return false;
 	}
 	
-	public boolean onTouchEvent(MotionEvent event) 
-    {
-    	if (event.getAction() == MotionEvent.ACTION_DOWN)
-    	{
-    		accel = true;
-    	}
-    	else if (event.getAction() == MotionEvent.ACTION_UP)
-    	{
-    		accel = false;
-    	}
-    	return true;
-    }
+	//TODO: Override onTouchEvent to set accel based on whether finger is down or not
 
 }

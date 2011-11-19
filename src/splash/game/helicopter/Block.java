@@ -2,6 +2,7 @@ package splash.game.helicopter;
 
 public class Block
 {
+	//Constants
 	public static final int BLOCK_WIDTH = 20;
 	public static final int BLOCK_HEIGHT = 100;
 	
@@ -9,15 +10,15 @@ public class Block
 	
 	public Block(int x, int y)
 	{
-		xLoc = x;
-		yLoc = y;
+		//TODO: Initialize x and y
 	}
 	
 	public void step(int speed)
 	{
-		xLoc -= speed;
+		//TODO: Move the block given the current speed
 	}
 	
+	//Getters
 	public int getX()
 	{
 		return xLoc;
