@@ -19,42 +19,15 @@ public class Hole
 	
 	public void step()
 	{
-		if (curState == EMPTY && mRand.nextInt(100) == 0)
-		{
-			curState = UP;
-			len = mRand.nextInt(50);
-			curStep = 0;
-		}
-		else if(curState == UP)
-		{
-			curStep++;
-			if(curStep > len)
-			{
-				curState = EMPTY;
-				WhackView.antiScore ++;
-			}
-		}
-		else if(curState == HIT)
-		{
-			curStep++;
-			if(curStep > len)
-			{
-				curState = EMPTY;
-			}
-		}
+		//TODO: Define some system of moving between states (EMPTY, UP, and HIT)
 	}
 	
 	public void hit()
 	{
-		if(curState == UP)
-		{
-			curState = HIT;
-			curStep = 0;
-			len = 20;
-			WhackView.score++;
-		}
+		//TODO: If the curState is UP, this should switch it to HIT and increment WhackView's score variable
 	}
 	
+	//Getter
 	public int getState()
 	{
 		return curState;

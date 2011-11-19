@@ -14,12 +14,6 @@ public class MenuActivity extends Activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.menu);
     }
-    
-    @Override
-    public boolean onTouchEvent(MotionEvent event)
-    {
-    	startActivity(new Intent(getBaseContext(), GameActivity.class));
-    	finish();
-    	return true;
-    }
+
+    //TODO: Override onTouchEvent to move to the main game activity when touched
 }
