@@ -5,23 +5,5 @@
     android:layout_height="fill_parent"
     android:gravity="center_horizontal|center_vertical"
     >
-	<TextView
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-	    android:textSize="40dip"
-	    android:textColor="#0000ff"
-	    android:text="@string/title"
-	    />
-	<TextView
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:textColor="#ffffff"
-		android:text="@string/splash"
-		/>
-	<TextView
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:textColor="#ffffff"
-		android:text="@string/click_to_continue"
-		/>
+	<!-- TODO: Draw some sort of intro screen (doesn't matter what it is) -->
 </LinearLayout>

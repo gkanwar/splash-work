@@ -22,53 +22,24 @@ public class WhackView extends View
 	public WhackView(Context context, AttributeSet attrs)
 	{
 		super(context, attrs);
-		for(int i = 0; i < 2; i++)
-		{
-			for(int j = 0; j < 3; j++)
-			{
-				hole[i][j] = new Hole();
-			}
-		}
-		
+
+		//TODO: Initialize the array of Holes
 	}
 	
 	@Override
 	public void onSizeChanged(int width, int height, int oldw, int oldh)
 	{
-		xSpacing = width/3;
-		ySpacing = height/4;
+		//TODO: Set the x spacing and the y spacing
 	}
 	
 	@Override
 	public void onDraw(Canvas canvas)
 	{
-		int holeState;
+		//TODO: Loop through the hole array and draw different colored squares in the correct location based on states
 		
-		for (int i = 0; i < 2; i++)
-		{
-			for (int j = 0; j < 3; j++)
-			{
-				hole[i][j].step();
-				holeState = hole[i][j].getState();
-				if(holeState == Hole.EMPTY)
-				{
-					mPaint.setColor(Color.GRAY);
-				}
-				else if(holeState == Hole.UP)
-				{
-					mPaint.setColor(Color.RED);
-				}
-				else if(holeState == Hole.HIT)
-				{
-					mPaint.setColor(Color.GREEN);
-				}
-				canvas.drawRect(xSpacing*(i+1)-RADIUS, ySpacing*(j+1)-RADIUS, xSpacing*(i+1)+RADIUS, ySpacing*(j+1)+RADIUS, mPaint);
-			}
-		}
+		//TODO: Draw the score text somewhere on the screen
 		
-		mPaint.setColor(Color.GRAY);
-		canvas.drawText("Score: " + score + ", Missed: " + antiScore, 10, 10, mPaint);
-		
+		//Invalidate so that it redraws continuously
 		invalidate();
 	}
 	
@@ -81,16 +52,7 @@ public class WhackView extends View
 			mx = (int) event.getX();
 			my = (int) event.getY();
 			
-			for(int i = 0; i < 2; i++)
-			{
-				for(int j = 0; j < 3; j++)
-				{
-					if (xSpacing*(i+1)-RADIUS <= mx && xSpacing*(i+1)+RADIUS >= mx && ySpacing*(j+1)-RADIUS <= my && ySpacing*(j+1)+RADIUS >= my)
-					{
-						hole[i][j].hit();
-					}
-				}
-			}
+			//TODO: Loop through the hole array and check for collisions, trigger the correct hit() function if need be
 		}
 		
 		return true;
