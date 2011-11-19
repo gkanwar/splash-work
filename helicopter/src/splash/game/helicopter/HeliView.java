@@ -1,111 +1,142 @@
 package splash.game.helicopter;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Random;
 
-import android.R.drawable;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
-public class HeliView extends View{
+public class HeliView extends View
+{	
+	private Random mRand = new Random();
+	private int speed = 4;
+	private final int heliWidth  = 60;
+	private final int heliHeight = 20;
+	private int heliStartX,heliStartY;
+	private int score = 0;
+	private int heliX = 10,heliY;
+	private float heliVel = 0;
+	private Point screenSize = new Point();
+	private LinkedList<Wall> walls = new LinkedList<Wall>(); //x current, y current, length
+	private LinkedList<Block> blocks = new LinkedList<Block>();
+	private boolean accel = false;
 	
-	Random random = new Random();
-	int speed = 4;
-	int difficulty  = 1;
-	final int blockHeight = 100;
-	final int blockWidth = 20;
-	final int heliWidth  = 100;
-	final int heliHeight = 20;
-	int heliStartX,heliStartY;
-	int score = 0;
-	private Bitmap heliImage;
-	int heliX = 10,heliY;
-	float heliVel = 0;
-	boolean firstRun = true;
-	Point screenSize = new Point();
-	ArrayList<Integer> walls = new ArrayList<Integer>(); //x current, y current, length
-	ArrayList<Integer> blockers = new ArrayList<Integer>();
-	boolean accel = false;
-	public HeliView(Context context, AttributeSet attrs) {
+	private Paint mPaint = new Paint();
+	
+	public HeliView(Context context, AttributeSet attrs)
+	{
 		super(context,attrs);
-		// TODO Auto-generated constructor stub
-		heliImage = BitmapFactory.decodeResource(context.getResources(), R.drawable.helicopter);
 	}
-	protected void onDraw ( Canvas canvas )
+	
+	@Override
+	public void onSizeChanged(int width, int height, int oldw, int oldh)
+	{
+		screenSize.x = width;
+		screenSize.y = height;
+		
+		heliStartX = 10;
+		heliStartY = screenSize.y/2 - heliHeight/2;
+		resetGame();
+	}
+	
+	@Override
+	protected void onDraw (Canvas canvas)
     {
-		screenSize.x = canvas.getWidth();
-		Log.v("screenSize",""+screenSize.x);
-		screenSize.y = canvas.getHeight();
-		if ( firstRun )
+    	mPaint.setColor(Color.GREEN);
+    	Block tempBlock;
+    	Wall tempWall;
+		for (int i = 0; i < blocks.size(); i++)
 		{
-			firstRun = false;
-			resetGame();
-			heliStartX = 10;
-			heliStartY = screenSize.y/2;
+			tempBlock = blocks.get(i);
+			canvas.drawRect(tempBlock.getX(), tempBlock.getY(), tempBlock.getX() + Block.BLOCK_WIDTH, tempBlock.getY() + Block.BLOCK_HEIGHT, mPaint);
 		}
-		Paint paint = new Paint();
-    	paint.setColor(Color.GREEN);
-		for ( int i = 0; i < blockers.size()/2;i++ )
+		for (int j = 0; j < walls.size(); j++)
 		{
-			canvas.drawRect(blockers.get(2*i),blockers.get(2*i + 1),blockers.get(2*i) + blockWidth, blockers.get(2*i+1) + blockHeight, paint);
+			tempWall = walls.get(j);
+			canvas.drawRect(tempWall.getX(), 0, tempWall.getX() + Wall.WALL_WIDTH, tempWall.getHeight(), mPaint);
+			canvas.drawRect(tempWall.getX(), screenSize.y - tempWall.getHeight(), tempWall.getX() + Wall.WALL_WIDTH, screenSize.y,  mPaint);
 		}
-		for ( int j = 0; j < walls.size()/3;j++ )
-		{
-			canvas.drawRect( walls.get(3*j),0,walls.get(3*j) + walls.get(3*j + 2),walls.get(3*j + 1),paint );
-			canvas.drawRect( walls.get(3*j),walls.get(3*j + 1) + (screenSize.y/3 * 2),walls.get(3*j) + walls.get(3*j +  2),screenSize.y,  paint);
-		}
-		canvas.drawBitmap(heliImage,null,new Rect( heliX, heliY, heliX + heliWidth, heliY + heliHeight ),paint);
-		updatePhysics(); 	
+		
+		mPaint.setColor(Color.BLUE);
+		canvas.drawRect(heliX, heliY, heliX + heliWidth, heliY + heliHeight, mPaint);
+		
+		updatePhysics();
 		invalidate();
     }
+
 	private void updatePhysics()
 	{
-		for ( int i = 0; i < walls.size()/3; i++ )
+		Log.v("Helicopter", "updatePhysics");
+		Wall tempWall;
+		int wallsLen = walls.size();
+		for (int i = 0; i < wallsLen; i++)
 		{
-			walls.set( 3*i, walls.get(3*i) - speed );
-			if ( i == walls.size()/3 - 1)
-			{
-			if ( walls.get(3*i) + walls.get(3*i + 2) <= screenSize.x )
-			{
-				int yLoc = random.nextInt(screenSize.y/3);
-				int width = random.nextInt(screenSize.x/2);
-				walls.add(walls.get(3*i) + walls.get(3*i + 2 ));
-				walls.add(yLoc);
-				walls.add(width);
-			}
-			}
+			tempWall = walls.get(i);
+			tempWall.step(speed);
 			
+			if (i == wallsLen - 1)
+			{
+				int height;
+				if(tempWall.getHeight() > screenSize.y/3)
+				{
+					height = tempWall.getHeight() - screenSize.y/10;
+				}
+				else if(tempWall.getHeight() < 0)
+				{
+					height = tempWall.getHeight() + screenSize.y/10;
+				}
+				else
+				{
+					height = tempWall.getHeight() + mRand.nextInt(screenSize.y / 10) - screenSize.y/20;
+				}
+				int prevLoc = tempWall.getX();
+				
+				walls.addLast(new Wall(prevLoc + Wall.WALL_WIDTH, height));
+			}
 		}
-		for ( int i = 0; i < blockers.size()/32;i++ )
+		
+		if (walls.size() > 0 && walls.get(0).getX() + Wall.WALL_WIDTH <= 0)
 		{
-			blockers.set(2*i, blockers.get(2*i) -  speed);
+			walls.removeFirst();
 		}
-		if ( random.nextInt(difficulty * 5) == 0 )
+		
+		Block tempBlock;
+		for (int i = 0; i < blocks.size(); i++)
 		{
-			Log.v("adding block","helicopter");
-			blockers.add( screenSize.x );
-			blockers.add( random.nextInt(7*screenSize.y/6) - screenSize.y/6);
+			tempBlock = blocks.get(i);
+			tempBlock.step(speed);
 		}
+		
+		if(blocks.size() > 0 && blocks.get(0).getX() + Block.BLOCK_WIDTH <= 0)
+		{
+			blocks.removeFirst();
+		}
+		
+		// 1/100 chance of adding a block
+		if (mRand.nextInt(100) == 0)
+		{
+			blocks.addLast(new Block(screenSize.x, mRand.nextInt((7/6) * screenSize.y) - screenSize.y / 6));
+		}
+		
 		if (accel)
 		{
-			heliVel -= 2;
+			heliVel -= 0.5;
 		}
 		else
 		{
-			heliVel += 2	;
+			heliVel += 0.5;
 		}
-		if ( checkCollision() )
+
+		if (checkCollision())
 		{
 			resetGame();
 		}
@@ -113,8 +144,10 @@ public class HeliView extends View{
 		{
 			score++;
 		}
+		
 		heliY += heliVel;
 	}
+	
 	private void resetGame()
 	{
 		heliX = heliStartX;
@@ -122,40 +155,56 @@ public class HeliView extends View{
 		heliVel = 0;
 		score = 0;
 		walls.clear();
-		blockers.clear();
-		walls.add(0);
-		walls.add(screenSize.y/5);
-		walls.add(screenSize.x);
+		blocks.clear();
+		
+		for (int i = 0; i < screenSize.x + Wall.WALL_WIDTH; i += Wall.WALL_WIDTH)
+		{
+			walls.addLast(new Wall(i, screenSize.y / 10));
+		}
 	}
+	
 	private boolean checkCollision()
 	{
-		Rect heliRect = new Rect ( heliX, heliY, heliX+ heliWidth, heliY+heliHeight);
-		for ( int i = 0; i < blockers.size()/2;i++)
+		Rect heliRect = new Rect (heliX, heliY, heliX + heliWidth, heliY + heliHeight);
+		
+		Block tempBlock;
+		for (int i = 0; i < blocks.size()/2;i++)
 		{
-			if ( Rect.intersects(heliRect, 
-					new Rect(blockers.get(2*i),blockers.get(2*i + 1),blockers.get(2*i) + blockHeight, blockers.get(2*i) + blockWidth )))
+			tempBlock = blocks.get(i);
+			Rect blockRect = new Rect(tempBlock.getX(), tempBlock.getY(), tempBlock.getX() + Block.BLOCK_WIDTH, tempBlock.getY() + Block.BLOCK_HEIGHT);
+			if (Rect.intersects(heliRect, blockRect))
 			{
 				return true;
 			}
 		}
-		for ( int j = 0; j < walls.size()/3;j++ )
+		
+		Wall tempWall;
+		for (int j = 0; j < walls.size(); j++)
 		{
-			if ( Rect.intersects(heliRect, new Rect( walls.get(3*j),0,walls.get(3*j) + walls.get(3*j + 2),walls.get(3*j + 1))) 
-					|| Rect.intersects(heliRect, 
-							new Rect(walls.get(3*j),walls.get(3*j + 1) + (screenSize.y/3 * 2),walls.get(3*j) + walls.get(3*j +  2),screenSize.y) ))
+			tempWall = walls.get(j);
+			Rect wallRectOne = new Rect(tempWall.getX(), 0, tempWall.getX() + Wall.WALL_WIDTH, tempWall.getHeight());
+			Rect wallRectTwo = new Rect(tempWall.getX(), screenSize.y - tempWall.getHeight(), tempWall.getX() + Wall.WALL_WIDTH, screenSize.y);
+			if (Rect.intersects(heliRect, wallRectOne) || Rect.intersects(heliRect, wallRectTwo))
 			{
 				return true;
 			}
 		}
+		
+		if (heliY > screenSize.y)
+		{
+			return true;
+		}
+		
 		return false;
 	}
-	public boolean onTouchEvent(final MotionEvent event) 
+	
+	public boolean onTouchEvent(MotionEvent event) 
     {
-    	if ( event.getAction() == MotionEvent.ACTION_DOWN)
+    	if (event.getAction() == MotionEvent.ACTION_DOWN)
     	{
     		accel = true;
     	}
-    	else if ( event.getAction() == MotionEvent.ACTION_UP)
+    	else if (event.getAction() == MotionEvent.ACTION_UP)
     	{
     		accel = false;
     	}
