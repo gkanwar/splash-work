@@ -1,6 +1,5 @@
 package splash.game.helicopter;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -16,7 +15,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 public class HeliView extends View
-{	
+{
 	private Random mRand = new Random();
 	private int speed = 4;
 	private final int heliWidth  = 60;
@@ -75,7 +74,6 @@ public class HeliView extends View
 
 	private void updatePhysics()
 	{
-		Log.v("Helicopter", "updatePhysics");
 		Wall tempWall;
 		int wallsLen = walls.size();
 		for (int i = 0; i < wallsLen; i++)
@@ -83,7 +81,7 @@ public class HeliView extends View
 			tempWall = walls.get(i);
 			tempWall.step(speed);
 			
-			if (i == wallsLen - 1)
+			if (i == wallsLen - 1 && tempWall.getX() + Wall.WALL_WIDTH < screenSize.x)
 			{
 				int height;
 				if(tempWall.getHeight() > screenSize.y/3)
