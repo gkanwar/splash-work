@@ -47,7 +47,7 @@ public class HeliView extends View
 		super(context,attrs);
 	}
 	
-	protected void onSizeChanged(int xNew, int yNew, int xOld, int yOld) { 
+	protected void onSizeChanged(int w, int h, int oldw, int oldh) { 
 	}
 	//TODO: Implement onSizeChanged such that it sets screenSize and sets the helicopter location
 	//(we can't set this before, because we need to know the dimensions to not place it off the screen)
