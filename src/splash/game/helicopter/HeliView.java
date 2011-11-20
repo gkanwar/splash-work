@@ -13,6 +13,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.LinearLayout;
 
 public class HeliView extends View
 {
@@ -46,19 +47,7 @@ public class HeliView extends View
 		super(context,attrs);
 	}
 	
-	public class SizeChangingLinearLayout extends LinearLayout {
-	    //...
-	    @Override
-	    protected void onSizeChanged(int xNew, int yNew, int xOld, int yOld)
-	    {        
-	        if (yNew < yOld) 
-	            fullScroll(View.FOCUS_DOWN)
-	        else if (yNew > yOld) 
-	            fullScroll(View.FOCUS_UP)
-
-	        super.onSizeChanged(xNew, yNew, xOld, yOld);
-
-	    }
+	protected void onSizeChanged(int xNew, int yNew, int xOld, int yOld) { 
 	}
 	//TODO: Implement onSizeChanged such that it sets screenSize and sets the helicopter location
 	//(we can't set this before, because we need to know the dimensions to not place it off the screen)
@@ -81,8 +70,8 @@ public class HeliView extends View
 		for (int j = 0; j < walls.size(); j++)
 		{
 			tempWall = walls.get(j);
-			r = new Rect(tempWall.getX(), canvas.getHeight() - tempWall.getHeight(),
-					tempWall.getX() + Wall.WALL_WIDTH, canvas.getHeight());
+			r = new Rect(tempWall.getX(), screenSize.y - tempWall.getHeight(),
+					tempWall.getX() + Wall.WALL_WIDTH, screenSize.y);
 			canvas.drawRect(r, mPaint);
 			r = new Rect(tempWall.getX(), 0, tempWall.getX() + Wall.WALL_WIDTH, tempWall.getHeight());
 			canvas.drawRect(r, mPaint);
@@ -149,12 +138,13 @@ public class HeliView extends View
 	private boolean checkCollision()
 	{
 		Rect heliRect = new Rect (heliX, heliY, heliX + heliWidth, heliY + heliHeight);
-		
+
+		Rect r;
 		Block tempBlock;
 		for (int i = 0; i < blocks.size()/2;i++)
 		{
 			tempBlock = blocks.get(i);
-			Rect r = new Rect(tempBlock.getX(), tempBlock.getY() - Block.BLOCK_HEIGHT,
+			r = new Rect(tempBlock.getX(), tempBlock.getY() - Block.BLOCK_HEIGHT,
 					tempBlock.getX() + Block.BLOCK_WIDTH, tempBlock.getY());
 			if(r.intersect(heliRect)) return true;
 		}
@@ -163,12 +153,20 @@ public class HeliView extends View
 		for (int j = 0; j < walls.size(); j++)
 		{
 			tempWall = walls.get(j);
-			//TODO: Create two Rect objects for the pair of walls corresponding to this Wall object, then use Rect.intersects
+			r = new Rect(tempWall.getX(), screenSize.y - tempWall.getHeight(),
+					tempWall.getX() + Wall.WALL_WIDTH, screenSize.y);
+			if(r.intersect(heliRect)) return true;
+			r = new Rect(tempWall.getX(), 0, tempWall.getX() + Wall.WALL_WIDTH, tempWall.getHeight());
+			if(r.intersect(heliRect)) return true;
 		}
-
-		//TODO: Check for the helicopter leaving the screen
 		
 		return false;
+	}
+	
+	public boolean onTouchEvent(MotionEvent event) {
+		if(event.getAction() == MotionEvent.ACTION_UP) accel = false;
+		else accel = true;
+		return true;
 	}
 	
 	//TODO: Override onTouchEvent to set accel based on whether finger is down or not
