@@ -4,11 +4,13 @@ import java.util.LinkedList;
 import java.util.Random;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.speech.tts.TextToSpeech;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -113,11 +115,13 @@ public class HeliView extends View
 		{
 			//TODO: Add a block
 		}
-		//TODO: Increment/decrement the velocity depending on whether accel is true
+		
+		if(accel) heliVel++;
+		else heliVel--;
 
 		//TODO: Use checkCollision() to determine whether the game has ended, if not increment score
 		
-		//TODO: Update the helicopter's y position
+		heliY += heliVel;
 	}
 	
 	private void resetGame()
