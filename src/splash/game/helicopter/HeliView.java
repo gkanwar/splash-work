@@ -16,7 +16,6 @@ import android.view.View;
 
 public class HeliView extends View
 {
-	//Random number generator
 	private Random mRand = new Random();
 	//The speed of the helicopter
 	private int speed = 4;
@@ -47,6 +46,20 @@ public class HeliView extends View
 		super(context,attrs);
 	}
 	
+	public class SizeChangingLinearLayout extends LinearLayout {
+	    //...
+	    @Override
+	    protected void onSizeChanged(int xNew, int yNew, int xOld, int yOld)
+	    {        
+	        if (yNew < yOld) 
+	            fullScroll(View.FOCUS_DOWN)
+	        else if (yNew > yOld) 
+	            fullScroll(View.FOCUS_UP)
+
+	        super.onSizeChanged(xNew, yNew, xOld, yOld);
+
+	    }
+	}
 	//TODO: Implement onSizeChanged such that it sets screenSize and sets the helicopter location
 	//(we can't set this before, because we need to know the dimensions to not place it off the screen)
 	//Also call resetGame() here... this is basically our setup function
@@ -75,7 +88,7 @@ public class HeliView extends View
 			canvas.drawRect(r, mPaint);
 		}
 		
-		//TODO: Draw the helicopter
+		
 		
 		updatePhysics();
 		invalidate();
@@ -111,7 +124,6 @@ public class HeliView extends View
 		{
 			//TODO: Add a block
 		}
-		
 		//TODO: Increment/decrement the velocity depending on whether accel is true
 
 		//TODO: Use checkCollision() to determine whether the game has ended, if not increment score
