@@ -63,12 +63,16 @@ public class HeliView extends View
 			tempBlock = blocks.get(i);
 			r = new Rect(tempBlock.getX(), tempBlock.getY() - Block.BLOCK_HEIGHT,
 					tempBlock.getX() + Block.BLOCK_WIDTH, tempBlock.getY());
+			canvas.drawRect(r, mPaint);
 		}
 		for (int j = 0; j < walls.size(); j++)
 		{
 			tempWall = walls.get(j);
 			r = new Rect(tempWall.getX(), canvas.getHeight() - tempWall.getHeight(),
 					tempWall.getX() + Wall.WALL_WIDTH, canvas.getHeight());
+			canvas.drawRect(r, mPaint);
+			r = new Rect(tempWall.getX(), 0, tempWall.getX() + Wall.WALL_WIDTH, tempWall.getHeight());
+			canvas.drawRect(r, mPaint);
 		}
 		
 		//TODO: Draw the helicopter
@@ -84,21 +88,23 @@ public class HeliView extends View
 		for (int i = 0; i < wallsLen; i++)
 		{
 			tempWall = walls.get(i);
-			//TODO: Step the wall
+			tempWall.step(speed);
 			
-			//TODO: Check to see if the last wall is one WALL_WIDTH away, and if so create the next wall
+			if(i == wallsLen - 1 && tempWall.getX() <= this.heliX + Wall.WALL_WIDTH) {
+				walls.add(new Wall(tempWall.getX() + Wall.WALL_WIDTH, this.mRand.nextInt(10)));
+			}
 		}
 		
-		//TODO: Check to see if the first wall is off the screen, if so remove it from the linked list
+		if(walls.get(0).getX() <= -Wall.WALL_WIDTH) walls.remove(0);
 		
 		Block tempBlock;
 		for (int i = 0; i < blocks.size(); i++)
 		{
 			tempBlock = blocks.get(i);
-			//TODO: Step the block
+			tempBlock.step(speed);
 		}
 		
-		//TODO: Check to see if the first block is off the screen, if so remove it from the linked list
+		if(blocks.get(0).getX() <= -Block.BLOCK_WIDTH) blocks.remove(0);
 		
 		// 1/100 chance of adding a block
 		if (mRand.nextInt(100) == 0)
