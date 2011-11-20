@@ -56,16 +56,19 @@ public class HeliView extends View
     {
     	mPaint.setColor(Color.GREEN);
     	Block tempBlock;
+		Rect r;
     	Wall tempWall;
 		for (int i = 0; i < blocks.size(); i++)
 		{
 			tempBlock = blocks.get(i);
-			//TODO: Draw the block
+			r = new Rect(tempBlock.getX(), tempBlock.getY() - Block.BLOCK_HEIGHT,
+					tempBlock.getX() + Block.BLOCK_WIDTH, tempBlock.getY());
 		}
 		for (int j = 0; j < walls.size(); j++)
 		{
 			tempWall = walls.get(j);
-			//TODO: Draw the wall, both top and bottom
+			r = new Rect(tempWall.getX(), canvas.getHeight() - tempWall.getHeight(),
+					tempWall.getX() + Wall.WALL_WIDTH, canvas.getHeight());
 		}
 		
 		//TODO: Draw the helicopter
@@ -133,7 +136,9 @@ public class HeliView extends View
 		for (int i = 0; i < blocks.size()/2;i++)
 		{
 			tempBlock = blocks.get(i);
-			//TODO: Create a Rect object for the block, then use Rect.intersects to determine collisions
+			Rect r = new Rect(tempBlock.getX(), tempBlock.getY() - Block.BLOCK_HEIGHT,
+					tempBlock.getX() + Block.BLOCK_WIDTH, tempBlock.getY());
+			if(r.intersect(heliRect)) return true;
 		}
 		
 		Wall tempWall;

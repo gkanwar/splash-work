@@ -10,12 +10,13 @@ public class Block
 	
 	public Block(int x, int y)
 	{
-		//TODO: Initialize x and y
+		xLoc = x;
+		yLoc = y;
 	}
 	
 	public void step(int speed)
 	{
-		//TODO: Move the block given the current speed
+		xLoc += speed;
 	}
 	
 	//Getters
